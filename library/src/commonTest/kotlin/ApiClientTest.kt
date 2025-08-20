@@ -6,7 +6,6 @@ import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
 import tm.mail.api.ApiClient
-import tm.mail.api.mailTmClient
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

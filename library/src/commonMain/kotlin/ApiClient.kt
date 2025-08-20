@@ -28,7 +28,6 @@ class ApiClient(
     engine: HttpClientEngine,
     private val baseUrl: String = "https://api.mail.tm"
 ) {
-
     private val http = HttpClient(engine) {
         expectSuccess = false
 
