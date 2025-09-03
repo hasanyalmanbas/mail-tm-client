@@ -1,10 +1,7 @@
-@file:OptIn(ExperimentalTime::class)
-
 package tm.mail.api
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
-import kotlin.time.ExperimentalTime
 
 @Serializable
 data class HydraCollection<T>(
@@ -13,7 +10,7 @@ data class HydraCollection<T>(
 )
 
 @Serializable
-data class Domain (
+data class Domain(
     val id: String,
     val domain: String,
     val isActive: Boolean,

@@ -1,14 +1,17 @@
 # Mail.tm Kotlin Client
 
-> **Status:** Active development — APIs may change and new endpoints will be added. Use with care in production.
+> **Status:** Production Ready — Complete implementation with comprehensive error handling and all API endpoints.
 
 ## What is it?
-A lightweight **Kotlin Multiplatform (KMP)** client for the [mail.tm](https://api.mail.tm) API, built on **Ktor 3.x** and **kotlinx.serialization**.
-- Minimal surface area, endpoint-named functions.
-- Works on Android, iOS.
-- Mockable with Ktor’s `MockEngine` for unit tests.
+A **complete Kotlin Multiplatform (KMP)** client for the [mail.tm](https://api.mail.tm) API, built on **Ktor 3.x** and **kotlinx.serialization**.
+- **Complete API coverage** - All mail.tm endpoints implemented
+- **Smart error handling** - Mail.tm specific exceptions with detailed error messages
+- **Authentication support** - Bearer token management with automatic retry
+- **Helper functions** - Convenient methods for common operations
+- **Works on Android, iOS** - Full multiplatform support
+- **Mockable** with Ktor's `MockEngine` for unit tests
 
-## Requirement
+## Requirements
 - Kotlin **1.9+** (or newer matching your toolchain)
 - Ktor **3.x**
 - kotlinx.serialization **1.9+**
@@ -16,34 +19,194 @@ A lightweight **Kotlin Multiplatform (KMP)** client for the [mail.tm](https://ap
 
 ---
 
-## Usage (common code)
+## Quick Start
 
 ```kotlin
 import tm.mail.api.createMailTmClient
+import tm.mail.api.ApiClient
+import tm.mail.api.mailTmEngine
 
 suspend fun demo() {
+    // Simple way - use convenience function
     val client = createMailTmClient()
 
-    // Create account
-    val account = client.createAccount(
+    // Or create manually with platform engine
+    val manualClient = ApiClient(mailTmEngine())
+
+    // Create account and authenticate in one step
+    val authenticatedClient = ApiClient.createAccountAndAuthenticate(
+        engine = mailTmEngine(),
         address = "user@example.com",
-        password = "pass-1234"
+        password = "secure-password"
     )
 
-    // List domains (Hydra collection)
-    val domains = client.getDomains()
-    println("Total: ${domains.totalItems}, first: ${domains.items.firstOrNull()?.domain}")
+    // Or authenticate with existing account
+    val existingClient = ApiClient.authenticateExisting(
+        engine = mailTmEngine(), 
+        address = "user@example.com",
+        password = "secure-password"
+    )
+
+    // Get all messages
+    val messages = authenticatedClient.getAllMessages()
+    println("You have ${messages.size} messages")
+}
+```
+
+## Advanced Usage
+
+### Create Random Account
+```kotlin
+val client = ApiClient(mailTmEngine())
+
+// Get a random available domain and create account
+val randomAccount = client.createRandomAccount("my-password")
+println("Created account: ${randomAccount.address}")
+
+// Authenticate and start using
+val token = client.createToken(randomAccount.address, "my-password")
+client.setToken(token.token)
+```
+
+### Message Management
+```kotlin
+// Get unread messages only
+val unreadMessages = client.getUnreadMessages()
+
+// Get specific message details
+val messageDetail = client.getMessageById("msg-id")
+
+// Mark message as read
+client.markMessageAsSeen("msg-id")
+
+// Mark all messages as read
+client.markAllMessagesAsSeen()
+
+// Delete all messages
+client.deleteAllMessages()
+
+// Get message source
+val source = client.getMessageSource("msg-id")
+```
+
+### Error Handling
+```kotlin
+try {
+    val account = client.createAccount("test@example.com", "password")
+} catch (e: MailTmException.AccountAlreadyExists) {
+    println("Account already exists: ${e.message}")
+    // Access original API response
+    println("API Error: ${e.originalResponse?.error}")
+} catch (e: MailTmException.InvalidDomain) {
+    println("Invalid domain: ${e.message}")
+} catch (e: MailTmException.RateLimited) {
+    println("Rate limited, try again later")
+} catch (e: MailTmException.NetworkError) {
+    println("Network error: ${e.message}")
+    // Access underlying cause
+    e.cause?.printStackTrace()
 }
 ```
 
 ---
 
-## API surface (current)
-- `POST /accounts` → `createAccount(address, password)`
-- `GET /domains` → `getDomains(page?)`
+## Complete API Coverage
 
-> More endpoints are planned; names will mirror the paths (e.g., `postToken`, `getMe`, `getMessages`, `patchMessagesByIdSeen`, …).
+### Authentication
+- `POST /token` → `createToken(address, password)` - Get auth token
+- Token management → `setToken(token)` - Set bearer token for requests
+
+### Account Management
+- `POST /accounts` → `createAccount(address, password)` - Create new account
+- `GET /accounts/{id}` → `getAccountById(id)` - Get account details  
+- `DELETE /accounts/{id}` → `deleteAccount(id)` - Delete account
+- `GET /me` → `getMe()` - Get current account info
+
+### Domain Management
+- `GET /domains` → `getDomains(page?)` - List available domains
+- `GET /domains/{id}` → `getDomainById(id)` - Get domain details
+
+### Message Operations
+- `GET /messages` → `getMessages(page?)` - List messages
+- `GET /messages/{id}` → `getMessageById(id)` - Get message details
+- `DELETE /messages/{id}` → `deleteMessage(id)` - Delete message
+- `PATCH /messages/{id}` → `markMessageAsSeen(id, seen)` - Mark as read/unread
+- `GET /sources/{id}` → `getMessageSource(id)` - Get raw message source
+
+### Helper Functions
+- `createAccountAndAuthenticate()` - Create account and login in one step
+- `authenticateExisting()` - Login with existing credentials  
+- `getRandomAvailableDomain()` - Get a random active domain
+- `createRandomAccount()` - Create account with random username
+- `getAllMessages()` - Get all messages (handles pagination)
+- `getUnreadMessages()` - Get only unread messages
+- `markAllMessagesAsSeen()` - Mark all messages as read
+- `deleteAllMessages()` - Delete all messages
 
 ---
 
-**Heads-up:** This client is under **active development**. Expect changes in method signatures and new endpoints as the library evolves.
+## Exception Types
+
+The client provides specific exception types for different error scenarios:
+
+### HTTP Status Based
+- `MailTmException.BadRequest` - 400 Bad Request
+- `MailTmException.Unauthorized` - 401 Unauthorized  
+- `MailTmException.NotFound` - 404 Not Found
+- `MailTmException.Conflict` - 409 Conflict
+- `MailTmException.UnprocessableEntity` - 422 Validation Error
+- `MailTmException.RateLimited` - 429 Too Many Requests
+- `MailTmException.Server` - 5xx Server Errors
+
+### Mail.tm Specific
+- `MailTmException.AccountAlreadyExists` - Email already registered
+- `MailTmException.InvalidCredentials` - Wrong email/password
+- `MailTmException.InvalidDomain` - Domain not valid
+- `MailTmException.AccountDisabled` - Account is disabled
+- `MailTmException.MessageNotFound` - Message doesn't exist
+- `MailTmException.DomainNotAvailable` - Domain not available
+- `MailTmException.QuotaExceeded` - Storage quota exceeded
+
+### Network Related  
+- `MailTmException.NetworkError` - Connection/network issues
+- `MailTmException.TimeoutError` - Request timeout
+
+All exceptions include the original API error response when available:
+```kotlin
+catch (e: MailTmException) {
+    println("Error: ${e.message}")
+    e.originalResponse?.let { response ->
+        println("API Error: ${response.error}")
+        println("Violations: ${response.violations}")
+    }
+}
+```
+
+---
+
+## Testing
+
+The client is fully mockable using Ktor's `MockEngine`:
+
+```kotlin
+@Test
+fun testCreateAccount() = runBlocking {
+    val mockEngine = MockEngine { request ->
+        respond(
+            content = ByteReadChannel("""{"id":"123","address":"test@example.com"}"""),
+            status = HttpStatusCode.OK,
+            headers = headersOf(HttpHeaders.ContentType, "application/json")
+        )
+    }
+    
+    val client = ApiClient(mockEngine)
+    val account = client.createAccount("test@example.com", "password")
+    
+    assertEquals("123", account.id)
+    assertEquals("test@example.com", account.address)
+}
+```
+
+---
+
+**Production Ready:** This client now provides complete mail.tm API coverage with robust error handling and convenient helper functions.
