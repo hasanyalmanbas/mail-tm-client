@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
 }
 
-group = "mail.tm"
+group = "com.github.hasanyalmanbas"
 version = "1.0.0"
 
 kotlin {
@@ -63,35 +63,31 @@ android {
 }
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-
-    signAllPublications()
-
-    coordinates(group.toString(), "library", version.toString())
+    coordinates(group.toString(), "mail-tm-client", version.toString())
 
     pom {
-        name = "My library"
-        description = "A library."
-        inceptionYear = "2024"
-        url = "https://github.com/kotlin/multiplatform-library-template/"
+        name = "Mail.tm Kotlin Client"
+        description = "A complete Kotlin Multiplatform client for the mail.tm API, built on Ktor 3.x and kotlinx.serialization."
+        inceptionYear = "2025"
+        url = "https://github.com/hasanyalmanbas/mail-tm-client"
         licenses {
             license {
-                name = "XXX"
-                url = "YYY"
-                distribution = "ZZZ"
+                name = "MIT License"
+                url = "https://opensource.org/licenses/MIT"
+                distribution = "repo"
             }
         }
         developers {
             developer {
-                id = "XXX"
-                name = "YYY"
-                url = "ZZZ"
+                id = "hasanyalmanbas"
+                name = "Hasan Yalmanbas"
+                url = "https://github.com/hasanyalmanbas"
             }
         }
         scm {
-            url = "XXX"
-            connection = "YYY"
-            developerConnection = "ZZZ"
+            url = "https://github.com/hasanyalmanbas/mail-tm-client"
+            connection = "scm:git:git://github.com/hasanyalmanbas/mail-tm-client.git"
+            developerConnection = "scm:git:ssh://git@github.com/hasanyalmanbas/mail-tm-client.git"
         }
     }
 }
