@@ -72,8 +72,8 @@ mavenPublishing {
         url = "https://github.com/hasanyalmanbas/mail-tm-client"
         licenses {
             license {
-                name = "MIT License"
-                url = "https://opensource.org/licenses/MIT"
+                name = "Apache License 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0"
                 distribution = "repo"
             }
         }
