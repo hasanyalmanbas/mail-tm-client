@@ -1,6 +1,6 @@
 # Mail.tm Kotlin Client
 
-[![JitPack](https://jitpack.io/v/hasanyalmanbas/mail-tm-client.svg)](https://jitpack.io/#hasanyalmanbas/mail-tm-client)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.hasanyalmanbas/mail-tm-client.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.hasanyalmanbas/mail-tm-client)
 [![Build](https://github.com/hasanyalmanbas/mail-tm-client/actions/workflows/build.yml/badge.svg)](https://github.com/hasanyalmanbas/mail-tm-client/actions)
 
 > **Status:** Production Ready — Complete implementation with comprehensive error handling and all API endpoints.
@@ -22,12 +22,11 @@ A **complete Kotlin Multiplatform (KMP)** client for the [mail.tm](https://api.m
 repositories {
     google()
     mavenCentral()
-    maven("https://jitpack.io")
 }
 
 // build.gradle.kts
 dependencies {
-    implementation("com.github.hasanyalmanbas:mail-tm-client:v1.0.0")
+    implementation("io.github.hasanyalmanbas:mail-tm-client:1.0.2")
 }
 ```
 
@@ -37,12 +36,11 @@ dependencies {
 repositories {
     google()
     mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 
 // build.gradle
 dependencies {
-    implementation 'com.github.hasanyalmanbas:mail-tm-client:v1.0.0'
+    implementation 'io.github.hasanyalmanbas:mail-tm-client:1.0.2'
 }
 ```
 
@@ -226,20 +224,20 @@ The client is fully mockable using Ktor's `MockEngine`:
 ```kotlin
 @Test
 fun testCreateAccount() = runBlocking {
-    val mockEngine = MockEngine { request ->
-        respond(
-            content = ByteReadChannel("""{"id":"123","address":"test@example.com"}"""),
-            status = HttpStatusCode.OK,
-            headers = headersOf(HttpHeaders.ContentType, "application/json")
-        )
+        val mockEngine = MockEngine { request ->
+            respond(
+                content = ByteReadChannel("""{"id":"123","address":"test@example.com"}"""),
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        val client = ApiClient(mockEngine)
+        val account = client.createAccount("test@example.com", "password")
+
+        assertEquals("123", account.id)
+        assertEquals("test@example.com", account.address)
     }
-    
-    val client = ApiClient(mockEngine)
-    val account = client.createAccount("test@example.com", "password")
-    
-    assertEquals("123", account.id)
-    assertEquals("test@example.com", account.address)
-}
 ```
 
 ---
