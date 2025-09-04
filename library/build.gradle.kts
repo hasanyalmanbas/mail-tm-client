@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
 }
 
-group = "com.github.hasanyalmanbas"
+group = "io.github.hasanyalmanbas"
 version = "1.0.0"
 
 kotlin {
@@ -63,6 +63,9 @@ android {
 }
 
 mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
+
     coordinates(group.toString(), "mail-tm-client", version.toString())
 
     pom {
