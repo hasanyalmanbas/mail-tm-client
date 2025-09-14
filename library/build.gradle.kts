@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.hasanyalmanbas"
-version = "1.0.4"
+version = "1.0.5"
 
 kotlin {
     androidTarget {
@@ -33,7 +33,6 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.auth)
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)

@@ -5,9 +5,6 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.DEFAULT
@@ -63,18 +60,14 @@ class ApiClient(
             delayMillis { (it.coerceAtLeast(1)) * 1000L }
         }
 
-        install(Auth) {
-            bearer {
-                loadTokens {
-                    bearerToken?.let { BearerTokens(it, "") }
-                }
-            }
-        }
 
         defaultRequest {
             url(baseUrl)
             contentType(ContentType.Application.Json)
             headers.append(HttpHeaders.Accept, "application/ld+json, application/json")
+            bearerToken?.let { token ->
+                headers.append(HttpHeaders.Authorization, "Bearer $token")
+            }
         }
     }
 
