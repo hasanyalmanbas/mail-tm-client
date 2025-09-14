@@ -26,7 +26,7 @@ repositories {
 
 // build.gradle.kts
 dependencies {
-    implementation("io.github.hasanyalmanbas:mail-tm-client:1.0.2")
+    implementation("io.github.hasanyalmanbas:mail-tm-client:1.0.3")
 }
 ```
 
@@ -40,7 +40,7 @@ repositories {
 
 // build.gradle
 dependencies {
-    implementation 'io.github.hasanyalmanbas:mail-tm-client:1.0.2'
+    implementation 'io.github.hasanyalmanbas:mail-tm-client:1.0.3'
 }
 ```
 
