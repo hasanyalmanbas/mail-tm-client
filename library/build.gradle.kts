@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.hasanyalmanbas"
-version = "1.0.3"
+version = "1.0.4"
 
 kotlin {
     androidTarget {

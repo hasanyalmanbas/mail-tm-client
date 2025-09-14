@@ -260,7 +260,7 @@ class ApiClient(
         return http.get("/me").handleErrors().body()
     }
 
-    suspend fun getMessages(page: Int? = null): HydraCollection<MessageListItemDto> {
+    suspend fun getMessages(page: Int? = null): HydraCollection<MessageSummaryDto> {
         return try {
             http.get("/messages") {
                 page?.let { parameter("page", it) }
@@ -353,8 +353,8 @@ class ApiClient(
         return createAccount(address, password)
     }
 
-    suspend fun getAllMessages(): List<MessageListItemDto> {
-        val allMessages = mutableListOf<MessageListItemDto>()
+    suspend fun getAllMessages(): List<MessageSummaryDto> {
+        val allMessages = mutableListOf<MessageSummaryDto>()
         var page = 1
         do {
             val response = getMessages(page)
@@ -364,7 +364,7 @@ class ApiClient(
         return allMessages
     }
 
-    suspend fun getUnreadMessages(): List<MessageListItemDto> {
+    suspend fun getUnreadMessages(): List<MessageSummaryDto> {
         return getAllMessages().filter { it.seen == false }
     }
 

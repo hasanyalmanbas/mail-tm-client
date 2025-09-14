@@ -44,7 +44,7 @@ data class TokenResponse(
 )
 
 @Serializable
-data class MessageAddress(val name: String, val address: String)
+data class MessageAddressDto(val name: String, val address: String)
 
 @Serializable
 data class AttachmentDto(
@@ -59,12 +59,12 @@ data class AttachmentDto(
 )
 
 @Serializable
-data class MessageListItemDto(
+data class MessageSummaryDto(
     val id: String,
     val accountId: String,
     val msgid: String,
-    val from: MessageAddress,
-    val to: List<MessageAddress> = emptyList(),
+    val from: MessageAddressDto,
+    val to: List<MessageAddressDto> = emptyList(),
     val subject: String,
     val intro: String,
     val seen: Boolean,
@@ -81,8 +81,8 @@ data class MessageDetailDto(
     val id: String,
     val accountId: String,
     val msgid: String,
-    val from: MessageAddress,
-    val to: List<MessageAddress> = emptyList(),
+    val from: MessageAddressDto,
+    val to: List<MessageAddressDto> = emptyList(),
     val cc: List<String> = emptyList(),
     val bcc: List<String> = emptyList(),
     val subject: String,
