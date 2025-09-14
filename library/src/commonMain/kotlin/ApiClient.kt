@@ -184,7 +184,7 @@ class ApiClient(
         }
     }
 
-    suspend fun createAccount(address: String, password: String): Account {
+    suspend fun createAccount(address: String, password: String): AccountDto {
         return try {
             http.post("/accounts") {
                 setBody(AccountCreateBody(address, password))
@@ -217,13 +217,13 @@ class ApiClient(
         }
     }
 
-    suspend fun getDomains(page: Int? = null): HydraCollection<Domain> {
+    suspend fun getDomains(page: Int? = null): HydraCollection<DomainDto> {
         return http.get("/domains") {
             page?.let { parameter("page", it) }
         }.handleErrors().body()
     }
 
-    suspend fun getDomainById(id: String): Domain {
+    suspend fun getDomainById(id: String): DomainDto {
         return http.get("/domains/$id").handleErrors().body()
     }
 
@@ -248,7 +248,7 @@ class ApiClient(
         }
     }
 
-    suspend fun getAccountById(id: String): Account {
+    suspend fun getAccountById(id: String): AccountDto {
         return http.get("/accounts/$id").handleErrors().body()
     }
 
@@ -256,11 +256,11 @@ class ApiClient(
         http.delete("/accounts/$id").handleErrors()
     }
 
-    suspend fun getMe(): Account {
+    suspend fun getMe(): AccountDto {
         return http.get("/me").handleErrors().body()
     }
 
-    suspend fun getMessages(page: Int? = null): HydraCollection<MessageListItem> {
+    suspend fun getMessages(page: Int? = null): HydraCollection<MessageListItemDto> {
         return try {
             http.get("/messages") {
                 page?.let { parameter("page", it) }
@@ -281,7 +281,7 @@ class ApiClient(
         }
     }
 
-    suspend fun getMessageById(id: String): MessageDetail {
+    suspend fun getMessageById(id: String): MessageDetailDto {
         return http.get("/messages/$id").handleErrors().body()
     }
 
@@ -295,7 +295,7 @@ class ApiClient(
         }.handleErrors()
     }
 
-    suspend fun getMessageSource(id: String): Source {
+    suspend fun getMessageSource(id: String): SourceDto {
         return http.get("/sources/$id").handleErrors().body()
     }
 
@@ -340,21 +340,21 @@ class ApiClient(
         }
     }
 
-    suspend fun getRandomAvailableDomain(): Domain {
+    suspend fun getRandomAvailableDomain(): DomainDto {
         val domains = getDomains()
         val activeDomains = domains.items.filter { it.isActive && !it.isPrivate }
         return activeDomains.random()
     }
 
-    suspend fun createRandomAccount(password: String): Account {
+    suspend fun createRandomAccount(password: String): AccountDto {
         val domain = getRandomAvailableDomain()
         val randomUsername = "user" + (10000..99999).random()
         val address = "$randomUsername@${domain.domain}"
         return createAccount(address, password)
     }
 
-    suspend fun getAllMessages(): List<MessageListItem> {
-        val allMessages = mutableListOf<MessageListItem>()
+    suspend fun getAllMessages(): List<MessageListItemDto> {
+        val allMessages = mutableListOf<MessageListItemDto>()
         var page = 1
         do {
             val response = getMessages(page)
@@ -364,7 +364,7 @@ class ApiClient(
         return allMessages
     }
 
-    suspend fun getUnreadMessages(): List<MessageListItem> {
+    suspend fun getUnreadMessages(): List<MessageListItemDto> {
         return getAllMessages().filter { it.seen == false }
     }
 
