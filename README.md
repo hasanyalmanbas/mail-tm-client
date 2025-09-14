@@ -10,6 +10,9 @@ A **complete Kotlin Multiplatform (KMP)** client for the [mail.tm](https://api.m
 - **Complete API coverage** - All mail.tm endpoints implemented
 - **Smart error handling** - Mail.tm specific exceptions with detailed error messages
 - **Authentication support** - Bearer token management with automatic retry
+- **Rate limiting support** - Built-in rate limit tracking (8 QPS compliance)
+- **Real-time updates** - Server-Sent Events (SSE) configuration for Mercure hub
+- **Professional validation** - RFC-compliant email validation with detailed constraints
 - **Helper functions** - Convenient methods for common operations
 - **Works on Android, iOS** - Full multiplatform support
 - **Mockable** with Ktor's `MockEngine` for unit tests
@@ -141,6 +144,68 @@ try {
 }
 ```
 
+## Advanced Features
+
+### Builder Pattern & Configuration
+
+```kotlin
+// Advanced client configuration
+val client = ApiClient.builder()
+    .baseUrl("https://api.mail.tm")
+    .enableLogging(true)
+    .requestTimeout(45_000L)
+    .maxRetries(5)
+    .build(engine)
+
+// With custom configuration object
+val config = ApiClientConfig(
+    enableLogging = true,
+    requestTimeoutMillis = 60_000L,
+    maxRetries = 3
+)
+val client = ApiClient.create(engine, config)
+```
+
+### Rate Limiting Monitoring
+
+```kotlin
+// Check rate limits after API calls
+client.getMessages()
+val rateInfo = client.getLastRateLimitInfo()
+rateInfo?.let { info ->
+    println("Remaining requests: ${info.remaining}/${info.limit}")
+    println("Reset time: ${info.reset}")
+}
+```
+
+### Real-time Message Updates
+
+```kotlin
+// Setup SSE for real-time message notifications
+val account = client.getMe()
+val sseConfig = client.createSSEConfig(account.id)
+
+// Use sseConfig.mercureUrl to connect to Server-Sent Events
+// Platform-specific EventSource implementation required
+```
+
+### Enhanced Message Details
+
+```kotlin
+val message = client.getMessageById("message-id")
+
+// Security verification information
+message.verifications?.let { verifications ->
+    println("TLS: ${verifications.tls?.version}")
+    println("SPF Passed: ${verifications.spf}")
+    println("DKIM Passed: ${verifications.dkim}")
+}
+
+// JSON-LD context information
+println("Context: ${message.context}")
+println("Type: ${message.jsonLdType}")
+```
+
 ---
 
 ## Complete API Coverage
@@ -224,20 +289,20 @@ The client is fully mockable using Ktor's `MockEngine`:
 ```kotlin
 @Test
 fun testCreateAccount() = runBlocking {
-        val mockEngine = MockEngine { request ->
-            respond(
-                content = ByteReadChannel("""{"id":"123","address":"test@example.com"}"""),
-                status = HttpStatusCode.OK,
-                headers = headersOf(HttpHeaders.ContentType, "application/json")
-            )
-        }
-
-        val client = ApiClient(mockEngine)
-        val account = client.createAccount("test@example.com", "password")
-
-        assertEquals("123", account.id)
-        assertEquals("test@example.com", account.address)
+    val mockEngine = MockEngine { request ->
+        respond(
+            content = ByteReadChannel("""{"id":"123","address":"test@example.com"}"""),
+            status = HttpStatusCode.OK,
+            headers = headersOf(HttpHeaders.ContentType, "application/json")
+        )
     }
+
+    val client = ApiClient.create(mockEngine)
+    val account = client.createAccount("test@example.com", "password")
+
+    assertEquals("123", account.id)
+    assertEquals("test@example.com", account.address)
+}
 ```
 
 ---
