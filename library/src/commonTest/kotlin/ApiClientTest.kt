@@ -40,7 +40,7 @@ class ApiClientTest {
             )
         }
 
-        val apiClient = ApiClient(engine)
+        val apiClient = ApiClient.create(engine)
 
         val account =
             apiClient.createAccount(address = expectedAddress, password = expectedPassword)
@@ -77,7 +77,7 @@ class ApiClientTest {
                     headers = headersOf(HttpHeaders.ContentType, "application/json")
                 )
             }
-            val apiClient = ApiClient(mockEngine)
+            val apiClient = ApiClient.create(mockEngine)
 
             val res = apiClient.getDomains()
 
@@ -108,7 +108,7 @@ class ApiClientTest {
             )
         }
 
-        val apiClient = ApiClient(engine)
+        val apiClient = ApiClient.create(engine)
         val tokenResponse = apiClient.createToken(expectedAddress, expectedPassword)
 
         assertEquals(expectedToken, tokenResponse.token)
@@ -138,7 +138,7 @@ class ApiClientTest {
             )
         }
 
-        val apiClient = ApiClient(engine)
+        val apiClient = ApiClient.create(engine)
         val account = apiClient.getMe()
 
         assertEquals("acc_1", account.id)
@@ -185,7 +185,7 @@ class ApiClientTest {
             )
         }
 
-        val apiClient = ApiClient(engine)
+        val apiClient = ApiClient.create(engine)
         val messages = apiClient.getMessages()
 
         assertEquals(1, messages.items.size)
@@ -204,7 +204,7 @@ class ApiClientTest {
             )
         }
 
-        val apiClient = ApiClient(engine)
+        val apiClient = ApiClient.create(engine)
 
         runBlocking {
             assertFailsWith<MailTmException.InvalidCredentials> {
@@ -223,7 +223,7 @@ class ApiClientTest {
             )
         }
 
-        val apiClient = ApiClient(engine)
+        val apiClient = ApiClient.create(engine)
 
         runBlocking {
             assertFailsWith<MailTmException.RateLimited> {
@@ -242,7 +242,7 @@ class ApiClientTest {
             )
         }
 
-        val apiClient = ApiClient(engine)
+        val apiClient = ApiClient.create(engine)
 
         runBlocking {
             val exception = assertFailsWith<MailTmException.AccountAlreadyExists> {
@@ -278,7 +278,7 @@ class ApiClientTest {
             )
         }
 
-        val apiClient = ApiClient(engine)
+        val apiClient = ApiClient.create(engine)
 
         runBlocking {
             val exception = assertFailsWith<MailTmException.UnprocessableEntity> {
@@ -299,7 +299,7 @@ class ApiClientTest {
             )
         }
 
-        val apiClient = ApiClient(engine)
+        val apiClient = ApiClient.create(engine)
 
         runBlocking {
             assertFailsWith<MailTmException.MessageNotFound> {

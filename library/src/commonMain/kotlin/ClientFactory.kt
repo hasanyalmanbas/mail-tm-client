@@ -4,4 +4,4 @@ import io.ktor.client.engine.HttpClientEngine
 
 expect fun mailTmEngine(): HttpClientEngine
 
-fun createMailTmClient(): ApiClient = ApiClient(engine = mailTmEngine())
+fun createMailTmClient(): ApiClient = ApiClient.create(engine = mailTmEngine())

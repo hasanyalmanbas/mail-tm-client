@@ -3,6 +3,19 @@ package tm.mail.api
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 
+/**
+ * Error response from Mail.tm API following JSON-LD/Hydra format.
+ *
+ * @property error Generic error message
+ * @property message Detailed error description
+ * @property type JSON-LD type identifier
+ * @property hydraTitle Human-readable error title
+ * @property hydraDescription Detailed error description
+ * @property violations List of validation errors (for 422 responses)
+ * @property status HTTP status code (if present in response)
+ * @property detail Additional error details
+ * @property title Error title
+ */
 @Serializable
 data class MailTmErrorResponse(
     val error: String? = null,
@@ -10,14 +23,26 @@ data class MailTmErrorResponse(
     @SerialName("@type") val type: String? = null,
     @SerialName("hydra:title") val hydraTitle: String? = null,
     @SerialName("hydra:description") val hydraDescription: String? = null,
-    val violations: List<ValidationViolation>? = null
+    val violations: List<ValidationViolation>? = null,
+    val status: Int? = null,
+    val detail: String? = null,
+    val title: String? = null
 )
 
+/**
+ * Validation violation details for 422 Unprocessable Entity responses.
+ *
+ * @property propertyPath JSON path to the invalid property
+ * @property message Human-readable validation error message
+ * @property code Machine-readable error code
+ * @property invalidValue The invalid value that caused the violation (if present)
+ */
 @Serializable
 data class ValidationViolation(
     val propertyPath: String? = null,
     val message: String? = null,
-    val code: String? = null
+    val code: String? = null,
+    val invalidValue: String? = null
 )
 
 sealed class MailTmException(message: String, val originalResponse: MailTmErrorResponse? = null) : Exception(message) {
